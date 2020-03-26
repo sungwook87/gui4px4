@@ -13,6 +13,9 @@
 #include "rosthread.h"
 #include <iostream>
 #include <QListView>
+#include <QPixmap>
+#include <QGraphicsView>
+#include <QGraphicsScene>
 
 namespace ui_server{
 #define PI 3.14159265359
@@ -37,6 +40,7 @@ public:
     Q_SLOT void bodyvelDisplay(double x, double y, double z);
     Q_SLOT void globalgpsDisplay(double lon, double lat, double alt);
     Q_SLOT void gpscompassDisplay(double heading);
+    Q_SLOT void mapimageDisplay(cv::Mat image);
 
 
 
@@ -188,11 +192,13 @@ private:
     QLineEdit *p_batteryDisplay;
     QLineEdit *p_flighttimeDisplay;
 
+    QGraphicsScene *p_map;
+    QGraphicsView *p_mapview;
+    QHBoxLayout *p_mapLayout;
+
 
     QVBoxLayout *bottomLayout;
     QPixmap logo;
-
-
 
     QHBoxLayout *mainLayout;
     QPushButton *closeButton;

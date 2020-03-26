@@ -134,6 +134,7 @@ UIWindow::UIWindow(int argc, char **argv, QWidget *parent)
     p_batteryLayout = new QHBoxLayout();
     p_flighttimeLayout = new QHBoxLayout();
     p_llogLayout = new QHBoxLayout();
+    p_mapLayout = new QHBoxLayout();
 
 
 
@@ -257,6 +258,10 @@ UIWindow::UIWindow(int argc, char **argv, QWidget *parent)
     p_logoLayout->addWidget(p_logoButton);
     p_logoLayout->addSpacing(150);
 
+    p_map = new QGraphicsScene();
+    p_mapview = new QGraphicsView(p_map);
+ //   p_mapLayout->addWidget(p_mapview);
+
 
     p_satelliteLayout->addWidget(p_satelliteLabel);
     p_satelliteLayout->addWidget(p_satelliteDisplay);
@@ -288,7 +293,8 @@ UIWindow::UIWindow(int argc, char **argv, QWidget *parent)
     p_estlatLayout->addWidget(p_imuDisplay);
 
     p_llogLayout->addWidget(ploglog);
-  //  p_llogLayout->addWidget(view_logging);  //test ->m_qlw
+    p_llogLayout->addWidget(p_mapview);
+
 
     p_xLayout->addWidget(p_xLabel);
     p_xLayout->addWidget(p_xDisplay);
@@ -329,6 +335,7 @@ UIWindow::UIWindow(int argc, char **argv, QWidget *parent)
     layout8 = new QHBoxLayout();
     layout9 = new QHBoxLayout();
     layout10 = new QHBoxLayout();
+
 
 
     mainLayout = new QHBoxLayout();
@@ -383,6 +390,7 @@ UIWindow::UIWindow(int argc, char **argv, QWidget *parent)
     rightLayout->addLayout(layout10);
 
     mainLayout->addLayout(leftLayout);
+   // mainLayout->addLayout(p_mapLayout);
     mainLayout->addLayout(rightLayout);
     setLayout(mainLayout);
 
@@ -416,6 +424,8 @@ UIWindow::UIWindow(int argc, char **argv, QWidget *parent)
     connect(&m_RosThread,         &RosThread::state, this, &UIWindow::stateDisplay);
     connect(&m_RosThread,         &RosThread::status, this, &UIWindow::logDisplay);
     connect(&m_RosThread,         &RosThread::logdata, this, &UIWindow::logDisplay);
+    qRegisterMetaType< cv::Mat >("cv::Mat");
+    connect(&m_RosThread,         &RosThread::mapimage, this, &UIWindow::mapimageDisplay);
 
 
     m_RosThread.init();
@@ -552,7 +562,15 @@ void UIWindow::bodyvelDisplay(double x, double y, double z)
   p_zvelDisplay->setText(vz);
 }
 
+void UIWindow::mapimageDisplay(cv::Mat image)
+{
+  QImage imgIn= QImage((uchar*) image.data, image.cols, image.rows, image.step, QImage::Format_RGB888);
+  QPixmap pixmap = QPixmap::fromImage(imgIn);
+  p_map->addPixmap(pixmap);
 
+ // std::cout<<"hi"<<std::endl;
+
+}
 
 
 

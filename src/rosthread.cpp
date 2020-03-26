@@ -45,7 +45,7 @@ bool RosThread::init()
     sub_fixgps = nh.subscribe("/mavros/global_position/raw/fix", 1, &RosThread::gpsfixCallback, this);
     sub_compass = nh.subscribe("/mavros/global_position/compass_hdg", 1, &RosThread::gpscompassCallback, this);
     sub_bodyvel = nh.subscribe("/mavros/local_position/velocity_body", 1, &RosThread::bodyvelCallback, this);
-
+    sub_2dmap = nh.subscribe("/mapimage", 1, &RosThread::mapCallback, this);
 // service //
     srv_take_off            = nh.serviceClient<muin_px4::take_off>("take_off");
     srv_landing             = nh.serviceClient<muin_px4::landing>("landing");
@@ -254,6 +254,28 @@ void RosThread::batteryCallback(const sensor_msgs::BatteryState::ConstPtr &msg)
   pMutex->unlock();
   delete pMutex;
   Q_EMIT battery(m_batt);
+}
+
+void RosThread::mapCallback(const sensor_msgs::ImageConstPtr &msg)
+{
+  QMutex *pMutex = new QMutex();
+  pMutex->lock();
+  cv_bridge::CvImagePtr cv_ptr;
+  //cv::Mat image;
+  try
+  {
+     cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+     image = cv_ptr->image.clone();
+  }
+  catch (cv_bridge::Exception& e)
+  {
+     ROS_ERROR("cv_bridge exception: %s", e.what());
+     return;
+  }
+  pMutex->unlock();
+  delete pMutex;
+  Q_EMIT mapimage(image);
+
 }
 
 

@@ -25,7 +25,12 @@
 #include <mavros_msgs/State.h>
 #include <std_msgs/Float64.h>
 #include <geometry_msgs/TwistStamped.h>
-
+#include <sensor_msgs/Image.h>
+#include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 // Service
 #include "muin_px4/pause_mission.h"
 #include "muin_px4/landing.h"
@@ -68,6 +73,7 @@ private:
     double rR, rP, rY;
     double xvel, yvel, zvel;
     double comp;
+    cv::Mat image;
 
    // double lon, lat, alt;
 
@@ -90,6 +96,8 @@ private:
     ros::Subscriber sub_fixgps;
     ros::Subscriber sub_compass;
     ros::Subscriber sub_bodyvel;
+
+    ros::Subscriber sub_2dmap;
 
     ros::ServiceClient srv_take_off;
     ros::ServiceClient srv_landing;
@@ -124,6 +132,7 @@ public:
     void gpsfixCallback(const sensor_msgs::NavSatFix &msg);
     void gpscompassCallback(const std_msgs::Float64 &msg);
     void bodyvelCallback(const geometry_msgs::TwistStamped::ConstPtr &msg);
+    void mapCallback(const sensor_msgs::ImageConstPtr &msg);
 
     void fn_take_off();
     void fn_landing();
@@ -151,6 +160,7 @@ public:
     Q_SIGNAL void battery(double);
     Q_SIGNAL void state(std::string, std::string);
     Q_SIGNAL void globalGPS(double, double, double);
+    Q_SIGNAL void mapimage(cv::Mat);
 
 
 };

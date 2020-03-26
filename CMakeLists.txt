@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
     nav_msgs
     sensor_msgs
     std_msgs
+    cv_bridge
 )
 
 add_service_files(
